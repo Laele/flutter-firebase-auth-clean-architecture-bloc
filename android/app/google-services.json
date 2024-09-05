@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1051541787700",
+    "project_id": "rate-products-app",
+    "storage_bucket": "rate-products-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1051541787700:android:91f71c452e940af7ac2661",
+        "android_client_info": {
+          "package_name": "com.rateproducts.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdsALx1KfwItbLWmM55wuxh4kbfCED4LU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
