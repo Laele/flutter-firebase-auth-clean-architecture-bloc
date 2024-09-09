@@ -41,14 +41,13 @@ class AuthRepositoryImpl implements AuthRepository {
   }
   
   @override
-  Future<Either<Failure, UserEntity>> createUserCollection({required String email, required String username}) async {
+  Future<Either<Failure, Unit>> createUserCollection({required String email, required String username}) async {
     try {
       final user = await remoteDataSource.createUserCollection(email: email, username: username);
-      
       if(user == null){
         return left(Failure(message: "User couldn't be added."));
       }
-      return right(user);
+      return right(unit);
     } on ServerException catch(e) {
       
       return left(Failure(message: e.message));

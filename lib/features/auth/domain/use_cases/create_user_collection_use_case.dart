@@ -4,13 +4,13 @@ import 'package:flutter_rate_products/core/shared/entities/user_entity.dart';
 import 'package:flutter_rate_products/features/auth/domain/repositories/auth_repository.dart';
 import 'package:fpdart/fpdart.dart';
 
-class CreateUserCollection implements UseCase<UserEntity, CreateUserCollectionParams> {
+class CreateUserCollection implements UseCase<Unit, CreateUserCollectionParams> {
 
   final AuthRepository authRepository;
   CreateUserCollection ({required this.authRepository});
   
   @override
-  Future<Either<Failure, UserEntity>> call(CreateUserCollectionParams params) async {
+  Future<Either<Failure, Unit>> call(CreateUserCollectionParams params) async {
       return await authRepository.createUserCollection(
         username: params.username, 
         email: params.email, 

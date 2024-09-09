@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_rate_products/core/error/exceptions.dart';
 import 'package:flutter_rate_products/features/auth/data/models/user_model.dart';
+import 'package:fpdart/fpdart.dart';
 
 abstract interface class AuthRemoteDataSource {
 
@@ -18,7 +19,7 @@ abstract interface class AuthRemoteDataSource {
     required String password
   });
 
-  Future<UserModel?> createUserCollection({
+  Future<Unit> createUserCollection({
     required String email,
     required String username
   });
@@ -47,6 +48,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw ServerException(message: 'User is null');
       }
 
+      //
+
+      //
       final Map<String, dynamic>  map = {
         'uid': response.user!.uid ?? '',
         'email': response.user!.email ?? '',
@@ -69,8 +73,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
 
       final Map<String, dynamic>  map = {
-        'uid': response.user!.uid ?? '',
-        'email': response.user!.email ?? '',
+        'uid': response.user!.uid,
+        'email': response.user!.email,
       };
 
       return UserModel.fromJson(map);
@@ -81,7 +85,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel?> createUserCollection({
+  Future<Unit> createUserCollection({
     required String username,
     required String email,
   }) async {
@@ -105,9 +109,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }).catchError((e){
         throw ServerException(message: e.toString());
       });
-      
-      return await getCurrentUserData();
-      //return false;
+      //return await getCurrentUserData();
+      return unit;
     }catch(e){
       
        throw ServerException(message: e.toString());
@@ -124,10 +127,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         final uid = await getCurrentUid();
         final userData = await _firebaseFirestore.collection('users').doc(uid).get();
 
-        /*final userData2 = await _firebaseFirestore.collection('users').where('uid', isEqualTo: uid).get();
-        final data = userData2.docs.first.data();
-        final model2 = UserModel.fromSnapshot(userData2.docs.first);*/
-        
+        _auth.authStateChanges().listen((User? user) async {
+          if(user == null){
+            print('User is currently signed out!');
+          }else{
+            final userData = await _firebaseFirestore.collection('users').doc(user.uid).get();          
+          }
+        });
         return UserModel.fromSnapshot( userData );
       }
       return null;

@@ -123,7 +123,7 @@ class _SignInScreenState extends State<SignUpScreen> {
                         alignment: Alignment.bottomRight,
                         child: GestureDetector(
                           onTap: () {
-                            context.pop();
+                            context.goNamed('sign-in');
                           },
                           child: RichText(
                               text: TextSpan(

@@ -59,26 +59,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         username: event.username
       ));
 
-      res.fold(
-        (failure) => emit(AuthFailure(message: failure.message)), 
-        (user) {}
+       res.fold(
+        (failure)  async => emit(AuthFailure(message: failure.message)), 
+        (user)  async {
+          _emitAuthSucces(user, emit);
+          await _createUserCollectionBloc(event, emit, user);
+        }
           
       );
+  }
 
-      if(res.isRight()){
-        final res2 = await _createUserCollection(
-          CreateUserCollectionParams(
-            email: event.email, 
-            username: event.username
-          )
-        ); 
-        res2.fold(
-          (failure) => emit(AuthFailure(message: failure.message)),
-          (success){
-            emit(AuthSuccess(user: success));  
-          }
-        );
-      }
+  FutureOr<void> _createUserCollectionBloc(AuthSignUp event, Emitter<AuthState> emit, UserEntity user) async {
+    final res2 = await _createUserCollection(
+      CreateUserCollectionParams(
+        email: event.email, 
+        username: event.username
+      )
+    ); 
+
+    res2.fold(
+      (failure) => emit(AuthFailure(message: failure.message)),
+      (success) => _emitAuthSucces(user, emit)
+    );
   }
 
   FutureOr<void> _authLogin(AuthLogin event, Emitter<AuthState> emit) async {
@@ -99,10 +101,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     final res = await _getCurrentUser(NoParams());
     res.fold(
-      (failure) {
-        emit(AuthFailure(message: failure.message));
-      },
+      (failure) => emit(AuthFailure(message: failure.message)),
+      //(success) => _emitAuthSucces(success, emit)
       (success) {
+          print('user auth');
+          print(success.email);
          _emitAuthSucces(success, emit);
       }
     );
@@ -110,11 +113,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
  
   FutureOr<void> _authSignOut(AuthSignOut event, Emitter<AuthState> emit) async {
     final res = await _userSignOut(NoParams());
-    res.fold((failure){
-        emit(AuthFailure(message: failure.message));
-    }, (success){
-      _appUserCubit.updateUser(null);
-    });
+    res.fold(
+      (failure) => emit(AuthFailure(message: failure.message)),
+      (success) => _appUserCubit.updateUser(null)
+    );
   }
 
   void _emitAuthSucces(UserEntity user, Emitter<AuthState> emit,) {

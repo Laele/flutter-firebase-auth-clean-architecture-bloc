@@ -16,7 +16,7 @@ abstract interface class AuthRepository {
     required String password
   });
 
-  Future<Either<Failure, UserEntity>> createUserCollection({
+  Future<Either<Failure, Unit>> createUserCollection({
     required String email,
     required String username
   });
