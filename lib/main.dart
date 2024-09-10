@@ -52,20 +52,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       theme: AppTheme.lightThemeMode,
-      routerConfig: router,
+      routerConfig: AppRouter.router,
     );
-    /*return BlocSelector<AppUserCubit, AppUserState, bool> (
-      selector: (state) {
-        return state is AppUserLoggedIn;
-      },
-      builder: (context, isUserLoggedIn) {
-        
-        return MaterialApp.router(
-          
-          theme: AppTheme.lightThemeMode,
-          routerConfig: isUserLoggedIn ? routerUser : routerInitial,
-        );
-      },
-    );*/
   }
 }

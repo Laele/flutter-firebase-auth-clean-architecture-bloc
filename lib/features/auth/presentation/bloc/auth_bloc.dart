@@ -59,7 +59,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         username: event.username
       ));
 
-       res.fold(
+      await res.fold(
         (failure)  async => emit(AuthFailure(message: failure.message)), 
         (user)  async {
           _emitAuthSucces(user, emit);
@@ -102,12 +102,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final res = await _getCurrentUser(NoParams());
     res.fold(
       (failure) => emit(AuthFailure(message: failure.message)),
-      //(success) => _emitAuthSucces(success, emit)
-      (success) {
-          print('user auth');
-          print(success.email);
-         _emitAuthSucces(success, emit);
-      }
+      (success) => _emitAuthSucces(success, emit)
     );
   }
  
@@ -120,6 +115,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _emitAuthSucces(UserEntity user, Emitter<AuthState> emit,) {
+    print(user.email);
+    print(user.username);
+    print(user.uid);
     _appUserCubit.updateUser(user);
     emit(AuthSuccess(user: user));
   }

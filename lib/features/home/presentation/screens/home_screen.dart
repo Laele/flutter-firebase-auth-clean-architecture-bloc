@@ -13,9 +13,8 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AppUserCubit, AppUserState>(
       listener: (context, state) {
-        print(state.runtimeType);
         if(state is AppUserInitial){
-          context.goNamed('sign-in');
+          context.goNamed('selector');
         }
       },
       child: SafeArea(

@@ -109,7 +109,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }).catchError((e){
         throw ServerException(message: e.toString());
       });
-      //return await getCurrentUserData();
       return unit;
     }catch(e){
       
@@ -124,16 +123,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<UserModel?> getCurrentUserData() async {
     try {
       if(currentUserSession != null){
-        final uid = await getCurrentUid();
-        final userData = await _firebaseFirestore.collection('users').doc(uid).get();
-
-        _auth.authStateChanges().listen((User? user) async {
-          if(user == null){
-            print('User is currently signed out!');
-          }else{
-            final userData = await _firebaseFirestore.collection('users').doc(user.uid).get();          
-          }
-        });
+        final userData = await _firebaseFirestore.collection('users').doc(currentUserSession!.uid).get();
         return UserModel.fromSnapshot( userData );
       }
       return null;
