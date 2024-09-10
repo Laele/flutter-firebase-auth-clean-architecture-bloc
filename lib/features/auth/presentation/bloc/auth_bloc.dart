@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rate_products/core/error/failures.dart';
 import 'package:flutter_rate_products/core/shared/cubits/app_user_cubit/app_user_cubit.dart';
 import 'package:flutter_rate_products/core/use_cases/use_case.dart';
 import 'package:flutter_rate_products/core/shared/entities/user_entity.dart';
@@ -62,7 +63,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await res.fold(
         (failure)  async => emit(AuthFailure(message: failure.message)), 
         (user)  async {
-          _emitAuthSucces(user, emit);
           await _createUserCollectionBloc(event, emit, user);
         }
           
@@ -91,9 +91,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       password: event.password)
     );
 
-    res.fold(
-      (failure) => emit(AuthFailure(message: failure.message)),
-      (success) => _emitAuthSucces(success, emit),
+    await res.fold (
+      (failure) async => emit(AuthFailure(message: failure.message)),
+      (success) async {
+        final user = await _getCurrentUser(NoParams());
+        user.fold(
+          (failure) => emit(AuthFailure(message: failure.message)), 
+          (user) => _emitAuthSucces(success, emit)
+        );
+      }
     );
   }
 
@@ -115,9 +121,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _emitAuthSucces(UserEntity user, Emitter<AuthState> emit,) {
-    print(user.email);
-    print(user.username);
-    print(user.uid);
     _appUserCubit.updateUser(user);
     emit(AuthSuccess(user: user));
   }

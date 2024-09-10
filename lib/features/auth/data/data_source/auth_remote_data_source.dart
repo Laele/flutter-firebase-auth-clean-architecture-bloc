@@ -48,9 +48,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         throw ServerException(message: 'User is null');
       }
 
-      //
-
-      //
       final Map<String, dynamic>  map = {
         'uid': response.user!.uid ?? '',
         'email': response.user!.email ?? '',
@@ -124,6 +121,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       if(currentUserSession != null){
         final userData = await _firebaseFirestore.collection('users').doc(currentUserSession!.uid).get();
+        print(userData);
+        print(userData.get('uid'));
+        print(userData.get('username'));
+        print(userData.get('email'));
+
         return UserModel.fromSnapshot( userData );
       }
       return null;
